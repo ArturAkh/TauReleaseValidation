@@ -20,7 +20,7 @@ from PhysicsTools.HeppyCore.utils.deltar import deltaR, bestMatch, deltaR2
 from PhysicsTools.Heppy.physicsutils.TauDecayModes import tauDecayModes
 from Var import Var
 from tau_ids import all_tau_ids, lepton_tau_ids, \
-    tau_ids, fill_tau_ids
+    tau_ids, fill_tau_ids, ids_available
 
 
 from relValTools import addArguments, getFilesFromEOS, \
@@ -608,7 +608,7 @@ if __name__ == '__main__':
                     all_var_dict['tau_flightLength_sig'].fill(
                         tau.flightLengthSig())
 
-                fill_tau_ids(all_var_dict, tau, all_tau_ids)
+                fill_tau_ids(all_var_dict, tau, ids_available)
             tau_tree.Fill()
     print "MATCHED TAUS:", NMatchedTaus
     print evtid, 'events are processed !'
