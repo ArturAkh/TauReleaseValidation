@@ -110,7 +110,7 @@ process.options = cms.untracked.PSet(wantSummary = cms.untracked.bool(True))
 from RecoTauTag.RecoTau.tools import runTauIdMVA
 tauIdEmbedder = runTauIdMVA.TauIDEmbedder(
     process, cms, updatedTauName = "NewTauIDsEmbedded",
-    toKeep = ["2017v2", "newDM2017v2", "newDMPhase2v1", "againstElePhase2v1", "againstEle2018", "deepTau2017v2p1"]
+    toKeep = ["2017v2", "newDM2017v2", "newDMPhase2v1", "deepTau2017v2p1",  "againstEle2018", "againstElePhase2v1"]
 )
 tauIdEmbedder.runTauID()
 
@@ -199,8 +199,8 @@ process = customiseEarlyDelete(process)
 # End adding early deletion
 
 #Customize MessageLogger
-process.MessageLogger.destinations = cms.untracked.vstring(runtype)
-process.MessageLogger.runtype = process.MessageLogger.cerr
+#process.MessageLogger.destinations = cms.untracked.vstring(runtype)
+#process.MessageLogger.runtype = process.MessageLogger.cerr
 print 'No. of events to process:', process.maxEvents.input.value()
 if process.maxEvents.input.value() > 10:
      process.MessageLogger.cerr.FwkReport.reportEvery = process.maxEvents.input.value()//10

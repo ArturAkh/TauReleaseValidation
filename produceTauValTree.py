@@ -19,8 +19,7 @@ from DataFormats.FWLite import Events, Handle
 from PhysicsTools.HeppyCore.utils.deltar import deltaR, bestMatch, deltaR2
 from PhysicsTools.Heppy.physicsutils.TauDecayModes import tauDecayModes
 from Var import Var
-from tau_ids import all_tau_ids, lepton_tau_ids, \
-    tau_ids, fill_tau_ids, ids_available
+from tau_ids import ids_available, fill_tau_ids
 
 
 from relValTools import addArguments, getFilesFromEOS, \
@@ -282,13 +281,7 @@ if __name__ == '__main__':
         Var('tau_flightLength_sig', float)
     ]
 
-    if not no_anti_lepton:
-        all_tau_ids += lepton_tau_ids
-
-    for mva_id in mvaid:
-        all_tau_ids += tau_ids[mva_id]
-
-    for (tau_id, v_type) in all_tau_ids:
+    for (tau_id, v_type) in ids_available:
         all_vars.append(Var('tau_' + tau_id, v_type))
 
     all_var_dict = {var.name: var for var in all_vars}
