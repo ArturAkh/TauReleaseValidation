@@ -3,14 +3,12 @@ import FWCore.ParameterSet.Config as cms
 import os
 from relValTools import getFilesFromEOS, getFilesFromDAS, runtype_to_sample
 from test_files import test_files
+import copy
 
 ######## Parsing options ########
 from FWCore.ParameterSet.VarParsing import VarParsing
 options = VarParsing('python')
-options.register('runtype', '', VarParsing.multiplicity.singleton, VarParsing.varType.string, "choose sample type; choices=['ZTT', 'ZEE', 'ZMM', 'QCD', 'TTbar', 'TTbarTau', 'ZpTT']")
-options.register('release', 'CMSSW_9_4_0_pre2', VarParsing.multiplicity.singleton, VarParsing.varType.string, 'Release string')
-options.register('globalTag', 'PU25ns_94X_mc2017_realistic_v1-v1', VarParsing.multiplicity.singleton, VarParsing.varType.string, 'Global tag')
-options.register('useRecoJets', False, VarParsing.multiplicity.singleton, VarParsing.varType.bool, 'Use RecoJets, 0 - false, 1 - true ')
+options.register('runtype', '', VarParsing.multiplicity.singleton, VarParsing.varType.string, "choose sample type; choices=['ZTT', 'ZEE', 'ZMM', 'QCD', 'TTbar', 'TenTaus', 'ZpTT']")
 options.register('storageSite', 'eos', VarParsing.multiplicity.singleton, VarParsing.varType.string, "Choose between samples store on eos or DAS or in private local folder. choices=['eos','das', 'loc']")
 options.register('localdir', '', VarParsing.multiplicity.singleton, VarParsing.varType.string, "Local dir where the samples are looked up. \
     Output is always created under the local dir if this option is activated and the outputfile is not")
@@ -20,9 +18,8 @@ options.register('debug', False, VarParsing.multiplicity.singleton, VarParsing.v
 options.register('key', '', VarParsing.multiplicity.singleton, VarParsing.varType.string, "Key for the input file")
 options.parseArguments()
 
-RelVal = options.release
-globalTag = options.globalTag
-useRecoJets = options.useRecoJets
+RelVal = 'CMSSW_11_1_2_patch1'
+globalTag = '111X_mcRun4_realistic_T15_v1'
 storageSite = options.storageSite
 localdir = options.localdir
 debug = options.debug
@@ -42,7 +39,7 @@ else:
     path = '/store/relval/{}/{}/MINIAODSIM/{}'.format(RelVal, runtype_to_sample[runtype], globalTag)
 
     if   storageSite == "eos": filelist = getFilesFromEOS(path)
-    elif storageSite == "das": filelist = getFilesFromDAS(RelVal, runtype_to_sample[runtype], globalTag)
+    elif storageSite == "das": filelist = getFilesFromDAS(RelVal, runtype_to_sample[runtype], globalTag, exact="/{PROCESS}/{RELEASE}-{GT}_HLTTDRPU200MINIv2-v1/GEN-SIM-DIGI-RAW-MINIAOD".format(PROCESS=runtype_to_sample[runtype],RELEASE=RelVal,GT=globalTag))
     elif storageSite == 'loc': filelist = getFilesFromEOS(localdir + runtype_to_sample[runtype] + "/" + RelVal + '-' + globalTag + '/', cmseospath=False)
 
     if len(filelist) == 0:
@@ -89,18 +86,17 @@ process.load('Configuration.StandardSequences.Services_cff')
 process.load('SimGeneral.HepPDTESSource.pythiapdt_cfi')
 process.load('Configuration.EventContent.EventContent_cff')
 process.load('FWCore/MessageService/MessageLogger_cfi')
-process.load('Configuration.StandardSequences.GeometryRecoDB_cff')
-process.load('Configuration.StandardSequences.MagneticField_cff')
-process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
 process.load('Configuration.StandardSequences.EndOfProcess_cff')
+
+process.load('Configuration.StandardSequences.MagneticField_cff')
+process.load('Configuration.Geometry.GeometryExtended2026D49Reco_cff')
+process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
+
 process.MessageLogger.cerr.FwkReport.reportEvery = 1000
 process.MessageLogger.cerr.threshold = cms.untracked.string('INFO')
-#process.load('Configuration.StandardSequences.Geometry_cff')
-#process.load('Configuration.Geometry.GeometryIdeal_cff')
-# process.load("TrackingTools.TransientTrack.TransientTrackBuilder_cfi")
 
 from Configuration.AlCa.GlobalTag import GlobalTag
-process.GlobalTag = GlobalTag(process.GlobalTag, '94X_mc2017_realistic_v14', '')# process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:phase1_2017_realistic', '')
+process.GlobalTag = GlobalTag(process.GlobalTag, globalTag, '')# process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:phase2_2017_realistic', '')
 
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(test_files[key]['file']),
@@ -111,19 +107,15 @@ process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(options.maxE
 process.options = cms.untracked.PSet(wantSummary = cms.untracked.bool(True))
 #--------------------------------------------------------------------------------
 
-from runTauIdMVA import TauIDEmbedder
-na = TauIDEmbedder(process, cms,
-    debug=False,
-    toKeep = ["2017v1", "2017v2", "newDM2017v2", "dR0p32017v2", "2016v1", "newDM2016v1"]
+from RecoTauTag.RecoTau.tools import runTauIdMVA
+tauIdEmbedder = runTauIdMVA.TauIDEmbedder(
+    process, cms, updatedTauName = "NewTauIDsEmbedded",
+    toKeep = ["2017v2", "newDM2017v2", "newDMPhase2v1", "againstElePhase2v1", "againstEle2018", "deepTau2017v2p1"]
 )
-na.runTauID()
+tauIdEmbedder.runTauID()
 
 print dir(process.loadRecoTauTagMVAsFromPrepDB.toGet)
 print process.loadRecoTauTagMVAsFromPrepDB.toGet[-1]
-#--------------------------------------------------------------------------------
-# process.p = cms.Path(process.rerunMvaIsolationSequence * process.NewTauIDsEmbedded)
-
-#--------------------------------------------------------------------------------
 
 # Output definition (MiniAOD + updated taus)
 # MiniAOD output
@@ -194,7 +186,7 @@ process.out = cms.OutputModule("PoolOutputModule",
 process.out.outputCommands.append('keep *_NewTauIDsEmbedded_*_*')
 
 # Path and EndPath definitions
-process.tauIDUpdate_step = cms.Path(process.rerunMvaIsolationSequence * process.NewTauIDsEmbedded)
+process.tauIDUpdate_step = cms.Path(process.rerunMvaIsolationSequence*process.NewTauIDsEmbedded)
 process.endjob_step = cms.EndPath(process.endOfProcess)
 process.out_step = cms.EndPath(process.out)
 
@@ -207,6 +199,8 @@ process = customiseEarlyDelete(process)
 # End adding early deletion
 
 #Customize MessageLogger
+process.MessageLogger.destinations = cms.untracked.vstring(runtype)
+process.MessageLogger.runtype = process.MessageLogger.cerr
 print 'No. of events to process:', process.maxEvents.input.value()
 if process.maxEvents.input.value() > 10:
      process.MessageLogger.cerr.FwkReport.reportEvery = process.maxEvents.input.value()//10
