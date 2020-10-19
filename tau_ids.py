@@ -49,6 +49,114 @@ all_tau_ids = [
     ('decayModeFindingNewDMs', int),
 ]
 
+ids_available = [
+    ('againstElectronDeadECAL', float),
+
+    ('decayModeFinding', float),
+    ('decayModeFindingNewDMs', float),
+
+    ('byCombinedIsolationDeltaBetaCorrRaw3Hits', float),
+    ('byLooseCombinedIsolationDeltaBetaCorr3Hits', float),
+    ('byMediumCombinedIsolationDeltaBetaCorr3Hits', float),
+    ('byTightCombinedIsolationDeltaBetaCorr3Hits', float),
+
+    ('byPhotonPtSumOutsideSignalCone', float),
+
+    ('chargedIsoPtSum', float),
+    ('footprintCorrection', float),
+    ('neutralIsoPtSum', float),
+    ('neutralIsoPtSumWeight', float),
+    ('photonPtSumOutsideSignalCone', float),
+    ('puCorrPtSum', float),
+
+    ('chargedIsoPtSumdR03', float),
+    ('footprintCorrectiondR03', float),
+    ('neutralIsoPtSumWeightdR03', float),
+    ('neutralIsoPtSumdR03', float),
+    ('photonPtSumOutsideSignalConedR03', float),
+
+    ('byIsolationMVArun2v1DBdR03oldDMwLTraw', float),
+    ('byVVLooseIsolationMVArun2v1DBdR03oldDMwLT', float),
+    ('byVLooseIsolationMVArun2v1DBdR03oldDMwLT', float),
+    ('byLooseIsolationMVArun2v1DBdR03oldDMwLT', float),
+    ('byMediumIsolationMVArun2v1DBdR03oldDMwLT', float),
+    ('byTightIsolationMVArun2v1DBdR03oldDMwLT', float),
+    ('byVTightIsolationMVArun2v1DBdR03oldDMwLT', float),
+    ('byVVTightIsolationMVArun2v1DBdR03oldDMwLT', float),
+
+    ('byIsolationMVArun2v1DBnewDMwLTraw', float),
+    ('byVVLooseIsolationMVArun2v1DBnewDMwLT', float),
+    ('byVLooseIsolationMVArun2v1DBnewDMwLT', float),
+    ('byLooseIsolationMVArun2v1DBnewDMwLT', float),
+    ('byMediumIsolationMVArun2v1DBnewDMwLT', float),
+    ('byTightIsolationMVArun2v1DBnewDMwLT', float),
+    ('byVTightIsolationMVArun2v1DBnewDMwLT', float),
+    ('byVVTightIsolationMVArun2v1DBnewDMwLT', float),
+
+    ('byIsolationMVArun2v1DBoldDMwLTraw', float),
+    ('byVVLooseIsolationMVArun2v1DBoldDMwLT', float),
+    ('byVLooseIsolationMVArun2v1DBoldDMwLT', float),
+    ('byLooseIsolationMVArun2v1DBoldDMwLT', float),
+    ('byMediumIsolationMVArun2v1DBoldDMwLT', float),
+    ('byTightIsolationMVArun2v1DBoldDMwLT', float),
+    ('byVTightIsolationMVArun2v1DBoldDMwLT', float),
+    ('byVVTightIsolationMVArun2v1DBoldDMwLT', float),
+
+    ('againstElectronMVA6Raw', float),
+    ('againstElectronMVA6category', float),
+    ('againstElectronLooseMVA6', float),
+    ('againstElectronMediumMVA6', float),
+    ('againstElectronTightMVA6', float),
+    ('againstElectronVLooseMVA6', float),
+    ('againstElectronVTightMVA6', float),
+
+    ('againstMuonLoose3', float),
+    ('againstMuonTight3', float),
+
+    ('byDeepTau2017v2p1VSeraw', float),
+    ('byVVVLooseDeepTau2017v2p1VSe', float),
+    ('byVVLooseDeepTau2017v2p1VSe', float),
+    ('byVLooseDeepTau2017v2p1VSe', float),
+    ('byLooseDeepTau2017v2p1VSe', float),
+    ('byMediumDeepTau2017v2p1VSe', float),
+    ('byTightDeepTau2017v2p1VSe', float),
+    ('byVTightDeepTau2017v2p1VSe', float),
+    ('byVVTightDeepTau2017v2p1VSe', float),
+
+    ('byDeepTau2017v2p1VSjetraw', float),
+    ('byVVVLooseDeepTau2017v2p1VSjet', float),
+    ('byVVLooseDeepTau2017v2p1VSjet', float),
+    ('byVLooseDeepTau2017v2p1VSjet', float),
+    ('byLooseDeepTau2017v2p1VSjet', float),
+    ('byMediumDeepTau2017v2p1VSjet', float),
+    ('byTightDeepTau2017v2p1VSjet', float),
+    ('byVTightDeepTau2017v2p1VSjet', float),
+    ('byVVTightDeepTau2017v2p1VSjet', float),
+
+    ('byDeepTau2017v2p1VSmuraw', float),
+    ('byVLooseDeepTau2017v2p1VSmu', float),
+    ('byLooseDeepTau2017v2p1VSmu', float),
+    ('byMediumDeepTau2017v2p1VSmu', float),
+    ('byTightDeepTau2017v2p1VSmu', float),
+
+    ('againstElectronMVA6RawPhase2v1', float),
+    ('againstElectronMVA6categoryPhase2v1', float),
+    ('againstElectronVLooseMVA6Phase2v1', float),
+    ('againstElectronLooseMVA6Phase2v1', float),
+    ('againstElectronMediumMVA6Phase2v1', float),
+    ('againstElectronTightMVA6Phase2v1', float),
+    ('againstElectronVTightMVA6Phase2v1', float),
+
+    ('byIsolationMVADBnewDMwLTPhase2raw', float),
+    ('byVVLooseIsolationMVADBnewDMwLTPhase2', float),
+    ('byVLooseIsolationMVADBnewDMwLTPhase2', float),
+    ('byLooseIsolationMVADBnewDMwLTPhase2', float),
+    ('byMediumIsolationMVADBnewDMwLTPhase2', float),
+    ('byTightIsolationMVADBnewDMwLTPhase2', float),
+    ('byVTightIsolationMVADBnewDMwLTPhase2', float),
+    ('byVVTightIsolationMVADBnewDMwLTPhase2', float),
+]
+
 lepton_tau_ids = [
     ('againstMuonLoose3', int),
     ('againstMuonTight3', int),
@@ -80,14 +188,11 @@ def create_tau_ids(name, n_wps=7):
 
 
 tau_ids = {
-    'deepTauIDv2p1VSe':create_tau_ids(name='DeepTau2017v2VSe2017', 4),
-    'deepTauIDv2p1VSmu':create_tau_ids(name='DeepTau2017v2VSmu2017', 8),
-    'deepTauIDv2p1VSjet':create_tau_ids(name='DeepTau2017v2VSjet2017', 8),
+    'deepTauIDv2p1VSe':create_tau_ids('DeepTau2017v2VSe2017', 4),
+    'deepTauIDv2p1VSmu':create_tau_ids('DeepTau2017v2VSmu2017', 8),
+    'deepTauIDv2p1VSjet':create_tau_ids('DeepTau2017v2VSjet2017', 8),
     '2017v2':create_tau_ids('IsolationMVArun2017v2DBoldDMwLT2017'),
-    '2017v1':create_tau_ids('IsolationMVArun2017v1DBoldDMwLT2017'),
-    '2016v1':create_tau_ids('IsolationMVArun2v1DBoldDMwLT2016', 6),
-    'newDM2016v1':create_tau_ids('IsolationMVArun2v1DBnewDMwLT2016', 6),
-    'dR0p32017v2':create_tau_ids('IsolationMVArun2017v2DBoldDMdR0p3wLT2017')
+    'newDM2017v2':create_tau_ids('IsolationMVArun2v1DBnewDMwLT2016', 6),
 }
 
 def fill_tau_ids(avd, tau, tau_id_names):
