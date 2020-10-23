@@ -79,7 +79,7 @@ def isGenLepton(lep_cand, pid):
             lep_cand.isDirectPromptTauDecayProductFinalState()
         ) and
         lep_cand.pt() > 20 and
-        abs(lep_cand.eta()) < 2.3
+        abs(lep_cand.eta()) < 3.0
     )
 
 def MatchTausToJets(refObjs):
@@ -472,7 +472,7 @@ if __name__ == '__main__':
                 all_var_dict['tau_genchargedpt'].fill(charged_p4.pt())
                 all_var_dict['tau_genneutralpt'].fill(neutral_p4.pt())
             else:
-                all_var_dict['tau_gendm'].fill(-1)
+                all_var_dict['tau_gendm'].fill(-1.0*abs(refObj.pdgId()))
                 all_var_dict['tau_genpt'].fill(refObj.pt())
                 all_var_dict['tau_geneta'].fill(refObj.eta())
                 all_var_dict['tau_genphi'].fill(refObj.phi())
