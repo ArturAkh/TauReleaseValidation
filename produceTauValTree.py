@@ -392,9 +392,9 @@ if __name__ == '__main__':
                     [d for d in gen_tau.final_ds
                         if abs(d.pdgId()) not in [12, 14, 16]]
                 )
-                if abs(gen_tau.visP4.eta()) > 2.3:
+                if abs(gen_tau.visP4.eta()) >= 3.0:
                     continue
-                if gen_tau.visP4.pt() < 10:
+                if gen_tau.visP4.pt() <= 10:
                     continue
                 if gen_dm == -11 or gen_dm == -13:
                     continue
@@ -411,7 +411,7 @@ if __name__ == '__main__':
                 all_jets = [
                     jet for jet in jetH.product()
                     if (jet.pt() > 20 and
-                        abs(jet.eta()) < 2.3 and
+                        abs(jet.eta()) < 3.0 and
                         jet.pt() < 200.5)
                 ]
                 jets = removeOverlap(all_jets, genLeptons)
@@ -421,7 +421,7 @@ if __name__ == '__main__':
                 all_gen_jets = [
                     jet for jet in genJetH.product()
                     if (jet.pt() > 20 and
-                        abs(jet.eta()) < 2.3 and
+                        abs(jet.eta()) < 3.0 and
                         jet.pt() < 200.5)
                 ]
                 gen_jets = removeOverlap(all_gen_jets, genLeptons)
