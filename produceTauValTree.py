@@ -363,7 +363,7 @@ if __name__ == '__main__':
             ]
             gen_jets = removeOverlap(all_gen_jets, genLeptons)
             matched_jets = []
-            for jet in all_jets:
+            for jet in jets:
                 genjet, dr2 = bestMatch(jet, gen_jets)
                 if dr2 < 0.01:
                     matched_jets.append(jet)
