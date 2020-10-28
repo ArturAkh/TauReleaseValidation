@@ -333,7 +333,7 @@ if __name__ == '__main__':
                 )
                 if abs(gen_tau.visP4.eta()) >= 3.0:
                     continue
-                if gen_tau.visP4.pt() <= 10:
+                if gen_tau.visP4.pt() <= 20:
                     continue
                 if gen_dm == -11 or gen_dm == -13:
                     continue
