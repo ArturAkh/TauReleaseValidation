@@ -79,7 +79,7 @@ def isGenLepton(lep_cand, pid):
             lep_cand.isDirectPromptTauDecayProductFinalState()
         ) and
         lep_cand.pt() > 20 and
-        abs(lep_cand.eta()) < 4.5
+        abs(lep_cand.eta()) < 3.0
     )
 
 def MatchTausToJets(refObjs):
@@ -156,73 +156,12 @@ if __name__ == '__main__':
     dprint('globalTag', globalTag)
     dprint('storageSite', storageSite)
 
-    filelist = []
-
-    if inputfiles:
-        filelist = inputfiles
-    else:
-        path = '/store/relval/{}/{}/MINIAODSIM/{}'.format(
-            RelVal,
-            runtype_to_sample[runtype],
-            globalTag
-        )
-
-        if storageSite == "eos":
-            filelist = getFilesFromEOS(path)
-        elif storageSite == "das":
-            filelist = getFilesFromDAS(
-                RelVal, runtype_to_sample[runtype], globalTag, exact)
-        elif storageSite == 'loc':
-            filelist = getFilesFromEOS(
-                localdir + runtype_to_sample[runtype] +
-                "/" + RelVal + '-' + globalTag + '/',
-                cmseospath=False)
-
-        if not filelist:
-            print 'Sample', RelVal, runtype, 'does not exist in', path
-            sys.exit(0)
-
+    filelist = inputfiles
     events = Events(filelist)
-    if maxEvents < 0 and storageSite == "das":
-      maxEvents=getNeventsFromDAS(RelVal, runtype_to_sample[runtype], globalTag, exact)
     print len(filelist), "files will be analyzed:", filelist, '\nEvents will be analyzed: %i' % maxEvents
 
     # +++++++ Output file +++++++++
     outputFileName = args.outputFileName
-    if not outputFileName:
-        if storageSite == 'loc':
-            outputFileName = localdir + \
-                runtype_to_sample[runtype] + "/" + RelVal + \
-                '-' + globalTag + '/' + 'TauValTree/'
-            if not os.path.isdir(outputFileName):
-                result = subprocess.check_output(
-                    "mkdir -p {outputFileName}".format(
-                        outputFileName=outputFileName
-                    ),
-                    shell=True
-                )
-
-        genSuffix = ""
-        if not useRecoJets and (runtype in jet_run_types):
-            genSuffix = "_genJets"
-        if runtype in muon_run_types:
-            genSuffix = "_genMuon"
-        if runtype in ele_run_types:
-            genSuffix = "_genEle"
-
-        outputFileName += 'Myroot_' + RelVal + '_' + \
-            globalTag + '_' + runtype + genSuffix + '.root'
-
-    else:
-        if "/" in outputFileName and outputFileName[0] != "/":
-            print "location of output file has a dir structure " \
-                  " but doesn't start with dash"
-            sys.exit(0)
-        if outputFileName[-5:] != ".root":
-            outputFileName += '.root'
-            print "output file should have a root format" \
-                  " - added automatically:", outputFileName
-
     print "outputFileName:", outputFileName
 
     out_file = ROOT.TFile(outputFileName, 'recreate')
@@ -392,7 +331,7 @@ if __name__ == '__main__':
                     [d for d in gen_tau.final_ds
                         if abs(d.pdgId()) not in [12, 14, 16]]
                 )
-                if abs(gen_tau.visP4.eta()) >= 4.5:
+                if abs(gen_tau.visP4.eta()) >= 3.0:
                     continue
                 if gen_tau.visP4.pt() <= 10:
                     continue
@@ -406,26 +345,29 @@ if __name__ == '__main__':
                 refObjs.append(gen_tau)
 
         elif runtype in jet_run_types:
-            if useRecoJets:
-                event.getByLabel("slimmedJets", jetH)
-                all_jets = [
-                    jet for jet in jetH.product()
-                    if (jet.pt() > 20 and
-                        abs(jet.eta()) < 4.5 and
-                        jet.pt() < 200.5)
-                ]
-                jets = removeOverlap(all_jets, genLeptons)
-                refObjs = copy.deepcopy(jets)
-            else:
-                event.getByLabel("slimmedGenJets", genJetH)
-                all_gen_jets = [
-                    jet for jet in genJetH.product()
-                    if (jet.pt() > 20 and
-                        abs(jet.eta()) < 4.5 and
-                        jet.pt() < 200.5)
-                ]
-                gen_jets = removeOverlap(all_gen_jets, genLeptons)
-                refObjs = copy.deepcopy(gen_jets)
+            event.getByLabel("slimmedJets", jetH)
+            all_jets = [
+                jet for jet in jetH.product()
+                if (jet.pt() > 20 and
+                    abs(jet.eta()) < 3.0 and
+                    jet.pt() < 200.5)
+            ]
+            jets = removeOverlap(all_jets, genLeptons)
+
+            event.getByLabel("slimmedGenJets", genJetH)
+            all_gen_jets = [
+                jet for jet in genJetH.product()
+                if (jet.pt() > 20 and
+                    abs(jet.eta()) < 3.0 and
+                    jet.pt() < 200.5)
+            ]
+            gen_jets = removeOverlap(all_gen_jets, genLeptons)
+            matched_jets = []
+            for jet in all_jets:
+                genjet, dr2 = bestMatch(jet, gen_jets)
+                if dr2 < 0.01:
+                    matched_jets.append(jet)
+            refObjs = copy.deepcopy(matched_jets)
         elif runtype in ele_run_types:
             refObjs = copy.deepcopy(genElectrons)
         elif runtype in muon_run_types:
