@@ -294,13 +294,14 @@ if __name__ == '__main__':
 
         genTaus = [p for p in genParticles if abs(
             p.pdgId()) == 15 and p.isPromptDecayed()]
+        visibleTaus = [visibleP4(g) for g in genTaus if visibleP4(g).pt() > 15.0]
 
         genElectrons = [
             p for p in genParticles if isGenLepton(p, 11)]
         genMuons = [
             p for p in genParticles if isGenLepton(p, 13)]
 
-        # gen leptons to clean jets with respect to them (e.g. for TTBar)
+        # gen leptons to clean jets with respect to them (e.g. for TTBar), since taus status == 2, only muons and electrons are covered by this
         genLeptons = [
             p for p in genParticles
             if (
@@ -321,6 +322,9 @@ if __name__ == '__main__':
                 )
             )
         ]
+        #if len(visibleTaus) > 0:
+        #    print([g.pdgId() for g in genLeptons], len(visibleTaus))
+        genLeptons += visibleTaus
 
         refObjs = []
         if runtype in tau_run_types:
