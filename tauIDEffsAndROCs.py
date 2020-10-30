@@ -11,7 +11,7 @@ def construct_binning(binning_structure):
     bins = np.concatenate([np.arange(start, end, step) for start, end, step in binning_structure] + [np.array([binning_structure[-1][1]])])
     return bins
 
-do_preprocessing = False
+do_preprocessing = True
 do_disc = True and do_preprocessing
 do_wps = False and do_preprocessing
 do_rocs = False and do_preprocessing
@@ -49,7 +49,7 @@ names = {
 }
 
 fake_minimum = {
-    "against_jet" : 0.004,
+    "against_jet" : 0.0004,
     "against_electron" : 0.0004,
     "against_muon" : 0.0001,
 }
