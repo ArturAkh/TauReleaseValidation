@@ -11,7 +11,7 @@ def construct_binning(binning_structure):
     bins = np.concatenate([np.arange(start, end, step) for start, end, step in binning_structure] + [np.array([binning_structure[-1][1]])])
     return bins
 
-do_preprocessing = True
+do_preprocessing = False
 do_disc = True and do_preprocessing
 do_wps = False and do_preprocessing
 do_rocs = False and do_preprocessing
@@ -27,13 +27,19 @@ ptbins  = {
     "muon" : construct_binning([[20.0, 60.0, 10.0]]),
 }
 
-etabins  = {
-    "genuine"  : construct_binning([[-3.2, 3.2, 0.2]]),
-    "jet"      : construct_binning([[-3.2, 3.2, 0.2]]),
-    "electron" : construct_binning([[-3.2, 3.2, 0.2]]),
-    "muon"     : construct_binning([[-3.2, 3.2, 0.2]]),
-}
+#etabins  = {
+#    "genuine"  : construct_binning([[-3.2, 3.2, 0.2]]),
+#    "jet"      : construct_binning([[-3.2, 3.2, 0.2]]),
+#    "electron" : construct_binning([[-3.2, 3.2, 0.2]]),
+#    "muon"     : construct_binning([[-3.2, 3.2, 0.2]]),
+#}
 
+etabins  = {
+    "genuine"  : construct_binning([[-1.4, 1.4, 0.2]]),
+    "jet"      : construct_binning([[-1.4, 1.4, 0.2]]),
+    "electron" : construct_binning([[-1.4, 1.4, 0.2]]),
+    "muon"     : construct_binning([[-1.4, 1.4, 0.2]]),
+}
 ### Definitions:
 # DeepTau vs jet: all 8
 # DeepTau vs electron: all 8
@@ -66,53 +72,54 @@ genuine_minimum = {
 #[names["jet"].push_back("%s_val.root"%p)for p in ["QCD"]]
 
 #baseline = "(tau_dm < 5 || tau_dm > 7) && tau_decayModeFindingNewDMs > 0.5 && tau_pt > 20.0 && tau_genpt > 20.0"
-baseline = "(tau_genpt > 20.0 && abs(tau_geneta) < 3.0)"
-nominator_cuts  = "(tau_decayModeFinding > 0.5 && tau_pt > 20.0 && abs(tau_eta) < 3.0)"
+#baseline = "(tau_genpt > 20.0 && abs(tau_geneta) < 3.0)"
+baseline = "(tau_genpt > 20.0 && abs(tau_geneta) < 1.4)"
+#nominator_cuts  = "(tau_decayModeFinding > 0.5 && tau_pt > 20.0 && abs(tau_eta) < 3.0)"
 #nominator_cuts  = "(tau_decayModeFinding > 0.5 && tau_pt > 20.0 && abs(tau_eta) < 1.4)"
-#nominator_cuts  = "(tau_decayModeFindingNewDMs > 0.5 && (tau_dm < 5 || tau_dm > 7) && tau_pt > 20.0 && abs(tau_eta) < 3.0)"
+nominator_cuts  = "(tau_decayModeFindingNewDMs > 0.5 && (tau_dm < 5 || tau_dm > 7) && tau_pt > 20.0 && abs(tau_eta) < 1.4)"
 
 
 combined_iso_phase2 = "(tau_chargedIsoPtSum + 0.2 * TMath::Max(0.0, tau_neutralIsoPtSumdR03 - ((abs(tau_eta) < 1.4)*5.0 + (abs(tau_eta) >= 1.4)*1.0)))"
 
 discriminators = {
     "against_jet" : {
-#        "DNN based, 2017"                  :            {"key" : "deep_tau", "expression" : "tau_byDeepTau2017v2p1VSjetraw"},
+        "DNN based, 2017"                  :            {"key" : "deep_tau", "expression" : "tau_byDeepTau2017v2p1VSjetraw"},
         "BDT based, new DM, Phase 2"       : {"key" : "bdt_phase2", "expression" : "0.5*(tau_byIsolationMVADBnewDMwLTPhase2raw + 1.0)"},
-#        "BDT based, new DM, 2017"          :    {"key" : "bdt_newDM",  "expression" : "0.5*(tau_byIsolationMVArun2017v2DBnewDMwLTraw2017 + 1.0)"},
+        "BDT based, new DM, 2017"          :    {"key" : "bdt_newDM",  "expression" : "0.5*(tau_byIsolationMVArun2017v2DBnewDMwLTraw2017 + 1.0)"},
 #        "BDT based, old DM, 2017"          :    {"key" : "bdt_oldDM",  "expression" : "0.5*(tau_byIsolationMVArun2017v2DBoldDMwLTraw2017 + 1.0)"},
 #        "Isolation sum based"              :    {"key" : "combined_iso",  "expression" : "-1.0*tau_byCombinedIsolationDeltaBetaCorrRaw3Hits*(tau_byCombinedIsolationDeltaBetaCorrRaw3Hits < 101.0) - 101.0*(tau_byCombinedIsolationDeltaBetaCorrRaw3Hits >= 101.0)"},
         "Isolation sum based, Phase 2"     :    {"key" : "combined_iso_phase2",  "expression" : "-1.0*{COMBISO}*({COMBISO} < 101.0) - 101.0*({COMBISO} >= 101.0)".format(COMBISO=combined_iso_phase2)},
     },
-#    "against_electron" : {
-#        "DNN based, 2017" :            {"key" : "deep_tau", "expression" : "tau_byDeepTau2017v2p1VSeraw"},
-#        "BDT based, Phase 2" : {"key" : "bdt_phase2", "expression" : "0.5*(tau_againstElectronMVA6RawPhase2v1 + 1.0)"},
-#        "BDT based, 2018" :    {"key" : "bdt_2018",  "expression" : "0.5*(tau_againstElectronMVA6Raw2018 + 1.0)"},
-#        "BDT based, 2016" :    {"key" : "bdt_2016",  "expression" : "0.5*(tau_againstElectronMVA6Raw + 1.0)"},
-#    },
-#    "against_muon" : {
-#        "DNN based, 2017" :            {"key" : "deep_tau", "expression" : "tau_byDeepTau2017v2p1VSmuraw"},
-#    },
+    "against_electron" : {
+        "DNN based, 2017" :            {"key" : "deep_tau", "expression" : "tau_byDeepTau2017v2p1VSeraw"},
+        "BDT based, Phase 2" : {"key" : "bdt_phase2", "expression" : "0.5*(tau_againstElectronMVA6RawPhase2v1 + 1.0)"},
+        "BDT based, 2018" :    {"key" : "bdt_2018",  "expression" : "0.5*(tau_againstElectronMVA6Raw2018 + 1.0)"},
+        "BDT based, 2016" :    {"key" : "bdt_2016",  "expression" : "0.5*(tau_againstElectronMVA6Raw + 1.0)"},
+    },
+    "against_muon" : {
+        "DNN based, 2017" :            {"key" : "deep_tau", "expression" : "tau_byDeepTau2017v2p1VSmuraw"},
+    },
 }
 
 discriminator_wps = {
     "against_jet" : {
-#        "DNN based, 2017" :            {"key" : "deep_tau", "wps" : ["tau_by{WP}DeepTau2017v2p1VSjet".format(WP=wp) for wp in wps]},
+        "DNN based, 2017" :            {"key" : "deep_tau", "wps" : ["tau_by{WP}DeepTau2017v2p1VSjet".format(WP=wp) for wp in wps]},
         "BDT based, new DM, Phase 2" : {"key" : "bdt_phase2", "wps" : ["tau_by{WP}IsolationMVADBnewDMwLTPhase2".format(WP=wp) for wp in wps[1:]]},
-#        "BDT based, new DM, 2017" :    {"key" : "bdt_newDM", "wps" : ["tau_by{WP}IsolationMVArun2017v2DBnewDMwLT2017 ".format(WP=wp) for wp in wps[1:]]},
+        "BDT based, new DM, 2017" :    {"key" : "bdt_newDM", "wps" : ["tau_by{WP}IsolationMVArun2017v2DBnewDMwLT2017 ".format(WP=wp) for wp in wps[1:]]},
 #        "BDT based, old DM, 2017" :    {"key" : "bdt_oldDM", "wps" : ["tau_by{WP}IsolationMVArun2017v2DBoldDMwLT2017".format(WP=wp) for wp in wps[1:]]},
 #        "Isolation sum based"     :    {"key" : "combined_iso", "wps" : ["tau_by{WP}CombinedIsolationDeltaBetaCorr3Hits".format(WP=wp) for wp in wps[3:6]]},
         "Isolation sum based, Phase 2"     :    {"key" : "combined_iso_phase2", "wps" : ["tau_by{WP}CombinedIsolationPhase2".format(WP=wp) for wp in wps[3:7]]},
     },
-#    "against_electron" : {
-#        "DNN based, 2017" :            {"key" : "deep_tau", "wps" : ["tau_by{WP}DeepTau2017v2p1VSe".format(WP=wp) for wp in wps]},
-#        "BDT based, Phase 2" : {"key" : "bdt_phase2", "wps" : ["tau_againstElectron{WP}MVA6Phase2v1".format(WP=wp) for wp in wps[2:7]]},
-#        "BDT based, 2018" :    {"key" : "bdt_2018", "wps" : ["tau_againstElectron{WP}MVA62018".format(WP=wp) for wp in wps[2:7]]},
-#        "BDT based, 2016" :    {"key" : "bdt_2016", "wps" : ["tau_againstElectron{WP}MVA6".format(WP=wp) for wp in wps[2:7]]},
-#    },
-#    "against_muon" : {
-#        "DNN based, 2017" :            {"key" : "deep_tau", "wps" : ["tau_by{WP}DeepTau2017v2p1VSmu".format(WP=wp) for wp in wps[2:6]]},
-#        "Cut based" :            {"key" : "cut_based", "wps" : ["tau_againstMuon{WP}3".format(WP=wp) for wp in ["Loose", "Tight"]]},
-#    },
+    "against_electron" : {
+        "DNN based, 2017" :            {"key" : "deep_tau", "wps" : ["tau_by{WP}DeepTau2017v2p1VSe".format(WP=wp) for wp in wps]},
+        "BDT based, Phase 2" : {"key" : "bdt_phase2", "wps" : ["tau_againstElectron{WP}MVA6Phase2v1".format(WP=wp) for wp in wps[2:7]]},
+        "BDT based, 2018" :    {"key" : "bdt_2018", "wps" : ["tau_againstElectron{WP}MVA62018".format(WP=wp) for wp in wps[2:7]]},
+        "BDT based, 2016" :    {"key" : "bdt_2016", "wps" : ["tau_againstElectron{WP}MVA6".format(WP=wp) for wp in wps[2:7]]},
+    },
+    "against_muon" : {
+        "DNN based, 2017" :            {"key" : "deep_tau", "wps" : ["tau_by{WP}DeepTau2017v2p1VSmu".format(WP=wp) for wp in wps[2:6]]},
+        "Cut based" :            {"key" : "cut_based", "wps" : ["tau_againstMuon{WP}3".format(WP=wp) for wp in ["Loose", "Tight"]]},
+    },
 }
 
 results = {}
@@ -125,26 +132,26 @@ if do_preprocessing:
     taus = {
         "genuine" : R.RDataFrame("per_tau",names["genuine"]).Filter(baseline),
         "jet" : R.RDataFrame("per_tau",names["jet"]).Filter(baseline),
-    #    "muon" : R.RDataFrame("per_tau","ZMM_val.root").Filter(baseline),
-    #    "electron" : R.RDataFrame("per_tau","ZEE_val.root").Filter(baseline),
+        "muon" : R.RDataFrame("per_tau","ZMM_val.root").Filter(baseline),
+        "electron" : R.RDataFrame("per_tau","ZEE_val.root").Filter(baseline),
     }
 
     n_true = taus["genuine"].Count().GetValue()
     n_jet = taus["jet"].Count().GetValue()
-#    n_e = taus["electron"].Count().GetValue()
-#    n_mu = taus["muon"].Count().GetValue()
+    n_e = taus["electron"].Count().GetValue()
+    n_mu = taus["muon"].Count().GetValue()
 
     print("n_true =",n_true)
     print("n_jet =",n_jet)
-#    print("n_e =",n_e)
-#    print("n_mu =",n_mu)
+    print("n_e =",n_e)
+    print("n_mu =",n_mu)
 
 
     ptbinselections = {
         "genuine" : [],
         "jet" : [],
-    #    "muon" : [],
-    #    "electron" : [],
+        "muon" : [],
+        "electron" : [],
     }
 
     for dtype in ptbinselections:
@@ -155,15 +162,15 @@ if do_preprocessing:
     ptbinnevents = {
         "genuine" : [ptbin.Count().GetValue() for ptbin in ptbinselections["genuine"]],
         "jet" : [ptbin.Count().GetValue() for ptbin in ptbinselections["jet"]],
-    #    "muon" : [ptbin.Count().GetValue() for ptbin in ptbinselections["muon"]],
-    #    "electron" : [ptbin.Count().GetValue() for ptbin in ptbinselections["electron"]],
+        "muon" : [ptbin.Count().GetValue() for ptbin in ptbinselections["muon"]],
+        "electron" : [ptbin.Count().GetValue() for ptbin in ptbinselections["electron"]],
     }
 
     etabinselections = {
         "genuine" : [],
         "jet" : [],
-    #    "muon" : [],
-    #    "electron" : [],
+        "muon" : [],
+        "electron" : [],
     }
 
     for dtype in etabinselections:
@@ -174,8 +181,8 @@ if do_preprocessing:
     etabinnevents = {
         "genuine" : [etabin.Count().GetValue() for etabin in etabinselections["genuine"]],
         "jet" : [etabin.Count().GetValue() for etabin in etabinselections["jet"]],
-    #    "muon" : [etabin.Count().GetValue() for etabin in etabinselections["muon"]],
-    #    "electron" : [etabin.Count().GetValue() for etabin in etabinselections["electron"]],
+        "muon" : [etabin.Count().GetValue() for etabin in etabinselections["muon"]],
+        "electron" : [etabin.Count().GetValue() for etabin in etabinselections["electron"]],
     }
 
 if do_disc:

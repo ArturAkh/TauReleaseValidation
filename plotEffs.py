@@ -15,29 +15,29 @@ colors = [R.kBlack, R.kRed+1, R.kCyan+2, R.kOrange+1, R.kMagenta+2, R.kGreen +2,
 ptbincenters = {
     "genuine" : np.array([(ptbins["genuine"][index] + ptbins["genuine"][index+1])/2.0 for index in range(len(ptbins["genuine"][:-1]))] + [ptbins["genuine"][-1]*1.1]),
     "jet" : np.array([(ptbins["jet"][index] + ptbins["jet"][index+1])/2.0 for index in range(len(ptbins["jet"][:-1]))] + [ptbins["jet"][-1]*1.1]),
-#    "electron" : np.array([(ptbins["electron"][index] + ptbins["electron"][index+1])/2.0 for index in range(len(ptbins["electron"][:-1]))] + [ptbins["electron"][-1]*1.1]),
-#    "muon" : np.array([(ptbins["muon"][index] + ptbins["muon"][index+1])/2.0 for index in range(len(ptbins["muon"][:-1]))] + [ptbins["muon"][-1]*1.1]),
+    "electron" : np.array([(ptbins["electron"][index] + ptbins["electron"][index+1])/2.0 for index in range(len(ptbins["electron"][:-1]))] + [ptbins["electron"][-1]*1.1]),
+    "muon" : np.array([(ptbins["muon"][index] + ptbins["muon"][index+1])/2.0 for index in range(len(ptbins["muon"][:-1]))] + [ptbins["muon"][-1]*1.1]),
 }
 
 etabincenters = {
     "genuine" : np.array([(etabins["genuine"][index] + etabins["genuine"][index+1])/2.0 for index in range(len(etabins["genuine"][:-1]))]),
     "jet" : np.array([(etabins["jet"][index] + etabins["jet"][index+1])/2.0 for index in range(len(etabins["jet"][:-1]))]),
-#    "electron" : np.array([(etabins["electron"][index] + etabins["electron"][index+1])/2.0 for index in range(len(etabins["electron"][:-1]))]),
-#    "muon" : np.array([(etabins["muon"][index] + etabins["muon"][index+1])/2.0 for index in range(len(etabins["muon"][:-1]))]),
+    "electron" : np.array([(etabins["electron"][index] + etabins["electron"][index+1])/2.0 for index in range(len(etabins["electron"][:-1]))]),
+    "muon" : np.array([(etabins["muon"][index] + etabins["muon"][index+1])/2.0 for index in range(len(etabins["muon"][:-1]))]),
 }
 
 ptbinwidths = {
     "genuine"   : np.array([(ptbins["genuine"][index] - ptbins["genuine"][index+1])/-2.0 for index in range(len(ptbins["genuine"][:-1]))] + [(ptbins["genuine"][-2] - ptbins["genuine"][-1])/-2.0]),
     "jet"       : np.array([(ptbins["jet"][index] - ptbins["jet"][index+1])/-2.0 for index in range(len(ptbins["jet"][:-1]))] + [(ptbins["jet"][-2] - ptbins["jet"][-1])/-2.0]),
-#    "electron" : np.array([(ptbins["electron"][index] - ptbins["electron"][index+1])/-2.0 for index in range(len(ptbins["electron"][:-1]))] + [(ptbins["electron"][-2] - ptbins["electron"][-1])/-2.0]),
-#    "muon"     : np.array([(ptbins["muon"][index] - ptbins["muon"][index+1])/-2.0 for index in range(len(ptbins["muon"][:-1]))] + [(ptbins["muon"][-2] - ptbins["muon"][-1])/-2.0]),
+    "electron" : np.array([(ptbins["electron"][index] - ptbins["electron"][index+1])/-2.0 for index in range(len(ptbins["electron"][:-1]))] + [(ptbins["electron"][-2] - ptbins["electron"][-1])/-2.0]),
+    "muon"     : np.array([(ptbins["muon"][index] - ptbins["muon"][index+1])/-2.0 for index in range(len(ptbins["muon"][:-1]))] + [(ptbins["muon"][-2] - ptbins["muon"][-1])/-2.0]),
 }
 
 etabinwidths = {
     "genuine" : np.array([(etabins["genuine"][index] - etabins["genuine"][index+1])/-2.0 for index in range(len(etabins["genuine"][:-1]))]),
     "jet" : np.array([(etabins["jet"][index] - etabins["jet"][index+1])/-2.0 for index in range(len(etabins["jet"][:-1]))]),
-#    "electron" : np.array([(etabins["electron"][index] - etabins["electron"][index+1])/-2.0 for index in range(len(etabins["electron"][:-1]))]),
-#    "muon" : np.array([(etabins["muon"][index] - etabins["muon"][index+1])/-2.0 for index in range(len(etabins["muon"][:-1]))]),
+    "electron" : np.array([(etabins["electron"][index] - etabins["electron"][index+1])/-2.0 for index in range(len(etabins["electron"][:-1]))]),
+    "muon" : np.array([(etabins["muon"][index] - etabins["muon"][index+1])/-2.0 for index in range(len(etabins["muon"][:-1]))]),
 }
 
 efficiencies = json.load(open("pt_efficiencies.json", "r"))
@@ -51,10 +51,21 @@ fake_minimum = {
 
 genuine_minimum = {
     "against_jet" : 0.0,
-    "against_electron" : 0.2,
-    "against_muon" : 0.75,
+    "against_electron" : 0.0,
+    "against_muon" : 0.0,
 }
 
+pt_fake_labels = {
+    "against_jet" : "reconstructed p_{T}(jet)",
+    "against_electron" : "generator p_{T}(e)",
+    "against_muon" : "generator p_{T}(#mu)",
+}
+
+eta_fake_labels = {
+    "against_jet" : "reconstructed #eta(jet)",
+    "against_electron" : "generator #eta(e)",
+    "against_muon" : "generator #eta(#mu)",
+}
 c = R.TCanvas()
 c.cd()
 
@@ -67,7 +78,7 @@ for dtype in efficiencies:
         c.SetLogy(0)
         legend = R.TLegend(0.16, 0.78, 0.94, 0.97)
         legend.SetFillStyle(0)
-        legend.SetTextSize(0.045)
+        legend.SetTextSize(0.04)
         legend.SetNColumns(4)
 
         for index, wp in enumerate(efficiencies[dtype][disc]):
@@ -116,13 +127,18 @@ for dtype in efficiencies:
         texttop.SetTextFont(42)
         texttop.DrawLatex(0.16,0.955,disc)
 
+        line = R.TLine(20.0, 1.0, ptbincenters["genuine"][-1]*1.1, 1.0)
+        line.SetLineColor(R.kBlack)
+        line.SetLineWidth(2)
+        line.Draw()
+
         c.SaveAs("_".join([dtype,disc.replace(",","").replace(" ","_"),"genuine"]) + ".png")
         c.Print("_".join([dtype,disc.replace(",","").replace(" ","_"),"genuine"]) + ".pdf")
         c.Clear()
         c.SetLogy(1)
         legend = R.TLegend(0.16, 0.78, 0.94, 0.97)
         legend.SetFillStyle(0)
-        legend.SetTextSize(0.045)
+        legend.SetTextSize(0.04)
         legend.SetNColumns(4)
         for index, wp in enumerate(efficiencies[dtype][disc]):
             fakename =  dtype.replace("against_","")
@@ -133,7 +149,7 @@ for dtype in efficiencies:
             fake[wp].SetLineWidth(2)
             fake[wp].SetMarkerStyle(8)
             fake[wp].SetMinimum(fake_minimum[dtype])
-            fake[wp].SetMaximum(1.2)
+            fake[wp].SetMaximum(10.0)
             fake[wp].GetXaxis().SetLimits(20.0, ptbincenters[fakename][-1]*1.1)
             wplabel = "None"
             if "VVTight" in wp:
@@ -154,7 +170,7 @@ for dtype in efficiencies:
                 wplabel = "Loose"
             legend.AddEntry(fake[wp], wplabel, "pl")
             if index == 0:
-                fake[wp].GetXaxis().SetTitle("reconstructed p_{T}(jet)")
+                fake[wp].GetXaxis().SetTitle(pt_fake_labels[dtype])
                 fake[wp].GetYaxis().SetTitle("%s to tau efficiency"%fakename)
                 fake[wp].Draw("APE")
             else:
@@ -171,6 +187,11 @@ for dtype in efficiencies:
         texttop.SetTextFont(42)
         texttop.DrawLatex(0.16,0.955,disc)
 
+        line = R.TLine(20.0, 1.0, ptbincenters[fakename][-1]*1.1, 1.0)
+        line.SetLineColor(R.kBlack)
+        line.SetLineWidth(2)
+        line.Draw()
+
         c.SaveAs("_".join([dtype,disc.replace(",","").replace(" ","_"),fakename]) + ".png")
         c.Print("_".join([dtype,disc.replace(",","").replace(" ","_"),fakename]) + ".pdf")
 
@@ -183,7 +204,7 @@ for dtype in eta_efficiencies:
         c.SetLogy(0)
         legend = R.TLegend(0.16, 0.78, 0.94, 0.97)
         legend.SetFillStyle(0)
-        legend.SetTextSize(0.045)
+        legend.SetTextSize(0.04)
         legend.SetNColumns(4)
         for index, wp in enumerate(eta_efficiencies[dtype][disc]):
             eta_genuine[wp] = R.TGraphErrors(len(eta_efficiencies[dtype][disc][wp]["genuine"]), etabincenters["genuine"], np.array(eta_efficiencies[dtype][disc][wp]["genuine"]), etabinwidths["genuine"], np.zeros(len(eta_efficiencies[dtype][disc][wp]["genuine"])))
@@ -194,7 +215,8 @@ for dtype in eta_efficiencies:
             eta_genuine[wp].SetMarkerStyle(8)
             eta_genuine[wp].SetMinimum(genuine_minimum[dtype])
             eta_genuine[wp].SetMaximum(1.2)
-            eta_genuine[wp].GetXaxis().SetLimits(-3.2, 3.2)
+            eta_genuine[wp].GetXaxis().SetLimits(-1.4, 1.4)
+#            eta_genuine[wp].GetXaxis().SetLimits(-3.2, 3.2)
             wplabel = "None"
             if "VVTight" in wp:
                 wplabel = "VVTight"
@@ -231,13 +253,18 @@ for dtype in eta_efficiencies:
         texttop.SetTextFont(42)
         texttop.DrawLatex(0.16,0.955,disc)
 
+        line = R.TLine(-1.4, 1.0, 1.4, 1.0)
+        line.SetLineColor(R.kBlack)
+        line.SetLineWidth(2)
+        line.Draw()
+
         c.SaveAs("_".join([dtype,disc.replace(",","").replace(" ","_"),"genuine","eta"]) + ".png")
         c.Print("_".join([dtype,disc.replace(",","").replace(" ","_"),"genuine","eta"]) + ".pdf")
         c.Clear()
         c.SetLogy(1)
         legend = R.TLegend(0.16, 0.78, 0.94, 0.97)
         legend.SetFillStyle(0)
-        legend.SetTextSize(0.045)
+        legend.SetTextSize(0.04)
         legend.SetNColumns(4)
         for index, wp in enumerate(eta_efficiencies[dtype][disc]):
             fakename =  dtype.replace("against_","")
@@ -248,8 +275,9 @@ for dtype in eta_efficiencies:
             eta_fake[wp].SetLineWidth(2)
             eta_fake[wp].SetMarkerStyle(8)
             eta_fake[wp].SetMinimum(fake_minimum[dtype])
-            eta_fake[wp].SetMaximum(1.2)
-            eta_fake[wp].GetXaxis().SetLimits(-3.2, 3.2)
+            eta_fake[wp].SetMaximum(10.0)
+            eta_fake[wp].GetXaxis().SetLimits(-1.4, 1.4)
+#            eta_fake[wp].GetXaxis().SetLimits(-3.2, 3.2)
             wplabel = "None"
             if "VVTight" in wp:
                 wplabel = "VVTight"
@@ -269,7 +297,7 @@ for dtype in eta_efficiencies:
                 wplabel = "Loose"
             legend.AddEntry(eta_fake[wp], wplabel, "pl")
             if index == 0:
-                eta_fake[wp].GetXaxis().SetTitle("reconstructed #eta(jet)")
+                eta_fake[wp].GetXaxis().SetTitle(eta_fake_labels[dtype])
                 eta_fake[wp].GetYaxis().SetTitle("%s to tau efficiency"%fakename)
                 eta_fake[wp].Draw("APE")
             else:
@@ -285,6 +313,11 @@ for dtype in eta_efficiencies:
         texttop.SetTextSize(0.04)
         texttop.SetTextFont(42)
         texttop.DrawLatex(0.16,0.955,disc)
+
+        line = R.TLine(-1.4, 1.0, 1.4, 1.0)
+        line.SetLineColor(R.kBlack)
+        line.SetLineWidth(2)
+        line.Draw()
 
         c.SaveAs("_".join([dtype,disc.replace(",","").replace(" ","_"),fakename,"eta"]) + ".png")
         c.Print("_".join([dtype,disc.replace(",","").replace(" ","_"),fakename,"eta"]) + ".pdf")
