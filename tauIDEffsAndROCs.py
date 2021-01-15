@@ -27,19 +27,19 @@ ptbins  = {
     "muon" : construct_binning([[20.0, 60.0, 10.0]]),
 }
 
-#etabins  = {
-#    "genuine"  : construct_binning([[-3.2, 3.2, 0.2]]),
-#    "jet"      : construct_binning([[-3.2, 3.2, 0.2]]),
-#    "electron" : construct_binning([[-3.2, 3.2, 0.2]]),
-#    "muon"     : construct_binning([[-3.2, 3.2, 0.2]]),
-#}
-
 etabins  = {
-    "genuine"  : construct_binning([[-1.4, 1.4, 0.2]]),
-    "jet"      : construct_binning([[-1.4, 1.4, 0.2]]),
-    "electron" : construct_binning([[-1.4, 1.4, 0.2]]),
-    "muon"     : construct_binning([[-1.4, 1.4, 0.2]]),
+    "genuine"  : construct_binning([[-3.2, 3.2, 0.2]]),
+    "jet"      : construct_binning([[-3.2, 3.2, 0.2]]),
+    "electron" : construct_binning([[-3.2, 3.2, 0.2]]),
+    "muon"     : construct_binning([[-3.2, 3.2, 0.2]]),
 }
+
+#etabins  = {
+#    "genuine"  : construct_binning([[-1.4, 1.4, 0.2]]),
+#    "jet"      : construct_binning([[-1.4, 1.4, 0.2]]),
+#    "electron" : construct_binning([[-1.4, 1.4, 0.2]]),
+#    "muon"     : construct_binning([[-1.4, 1.4, 0.2]]),
+#}
 ### Definitions:
 # DeepTau vs jet: all 8
 # DeepTau vs electron: all 8
@@ -73,10 +73,12 @@ genuine_minimum = {
 
 #baseline = "(tau_dm < 5 || tau_dm > 7) && tau_decayModeFindingNewDMs > 0.5 && tau_pt > 20.0 && tau_genpt > 20.0"
 #baseline = "(tau_genpt > 20.0 && abs(tau_geneta) < 3.0)"
-baseline = "(tau_genpt > 20.0 && abs(tau_geneta) < 1.4)"
+#baseline = "(tau_genpt > 20.0 && abs(tau_geneta) < 1.4)"
+baseline = "(tau_genpt > 20.0 && abs(tau_geneta) >= 1.4 && abs(tau_geneta) < 3.0)"
 #nominator_cuts  = "(tau_decayModeFinding > 0.5 && tau_pt > 20.0 && abs(tau_eta) < 3.0)"
 #nominator_cuts  = "(tau_decayModeFinding > 0.5 && tau_pt > 20.0 && abs(tau_eta) < 1.4)"
-nominator_cuts  = "(tau_decayModeFindingNewDMs > 0.5 && (tau_dm < 5 || tau_dm > 7) && tau_pt > 20.0 && abs(tau_eta) < 1.4)"
+#nominator_cuts  = "(tau_decayModeFindingNewDMs > 0.5 && (tau_dm < 5 || tau_dm > 7) && tau_pt > 20.0 && abs(tau_eta) < 1.4)"
+nominator_cuts  = "(tau_decayModeFindingNewDMs > 0.5 && (tau_dm < 5 || tau_dm > 7) && tau_pt > 20.0 && abs(tau_eta) >= 1.4 && abs(tau_eta) < 3.0)"
 
 
 combined_iso_phase2 = "(tau_chargedIsoPtSum + 0.2 * TMath::Max(0.0, tau_neutralIsoPtSumdR03 - ((abs(tau_eta) < 1.4)*5.0 + (abs(tau_eta) >= 1.4)*1.0)))"
@@ -105,7 +107,7 @@ discriminator_wps = {
     "against_jet" : {
         "DNN based, 2017" :            {"key" : "deep_tau", "wps" : ["tau_by{WP}DeepTau2017v2p1VSjet".format(WP=wp) for wp in wps]},
         "BDT based, new DM, Phase 2" : {"key" : "bdt_phase2", "wps" : ["tau_by{WP}IsolationMVADBnewDMwLTPhase2".format(WP=wp) for wp in wps[1:]]},
-        "BDT based, new DM, 2017" :    {"key" : "bdt_newDM", "wps" : ["tau_by{WP}IsolationMVArun2017v2DBnewDMwLT2017 ".format(WP=wp) for wp in wps[1:]]},
+        "BDT based, new DM, 2017" :    {"key" : "bdt_newDM", "wps" : ["tau_by{WP}IsolationMVArun2017v2DBnewDMwLT2017".format(WP=wp) for wp in wps[1:]]},
 #        "BDT based, old DM, 2017" :    {"key" : "bdt_oldDM", "wps" : ["tau_by{WP}IsolationMVArun2017v2DBoldDMwLT2017".format(WP=wp) for wp in wps[1:]]},
 #        "Isolation sum based"     :    {"key" : "combined_iso", "wps" : ["tau_by{WP}CombinedIsolationDeltaBetaCorr3Hits".format(WP=wp) for wp in wps[3:6]]},
         "Isolation sum based, Phase 2"     :    {"key" : "combined_iso_phase2", "wps" : ["tau_by{WP}CombinedIsolationPhase2".format(WP=wp) for wp in wps[3:7]]},
@@ -367,7 +369,8 @@ if do_pt_binned:
                 print("\t\tgenuine (evt):",wp_results_ptbinned[dtype][name][wp]["genuine_nevents"])
                 print("\t\tfake (evt):",wp_results_ptbinned[dtype][name][wp][fake+"_nevents"])
 
-    with open("pt_efficiencies.json", "w") as f:
+    #with open("pt_efficiencies.json", "w") as f:
+    with open("pt_efficiencies_endcap.json", "w") as f:
         json.dump(wp_results_ptbinned, f, indent=2)
 
 if do_eta_binned:
@@ -431,5 +434,6 @@ if do_eta_binned:
                 print("\t\tfake:",wp_results_etabinned[dtype][name][wp][fake])
                 print("\t\tgenuine (evt):",wp_results_etabinned[dtype][name][wp]["genuine_nevents"])
                 print("\t\tfake (evt):",wp_results_etabinned[dtype][name][wp][fake+"_nevents"])
-    with open("eta_efficiencies.json", "w") as f:
+    #with open("eta_efficiencies.json", "w") as f:
+    with open("eta_efficiencies_endcap.json", "w") as f:
         json.dump(wp_results_etabinned, f, indent=2)

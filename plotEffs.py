@@ -10,7 +10,16 @@ R.gStyle.SetLegendBorderSize(1)
 ModTDRStyle()
 from tauIDEffsAndROCs import ptbins, etabins
 
-colors = [R.kBlack, R.kRed+1, R.kCyan+2, R.kOrange+1, R.kMagenta+2, R.kGreen +2, R.kBlue, R.kYellow+3]
+colors = {
+    "VVVLoose": R.kYellow+3,
+    "VVLoose" : R.kBlack,
+    "VLoose"  : R.kRed+1,
+    "Loose"   : R.kCyan+2,
+    "Medium"  : R.kOrange+1,
+    "Tight"   : R.kMagenta+2,
+    "VTight"  : R.kGreen+2,
+    "VVTight" : R.kBlue,
+}
 
 ptbincenters = {
     "genuine" : np.array([(ptbins["genuine"][index] + ptbins["genuine"][index+1])/2.0 for index in range(len(ptbins["genuine"][:-1]))] + [ptbins["genuine"][-1]*1.1]),
@@ -40,8 +49,11 @@ etabinwidths = {
     "muon" : np.array([(etabins["muon"][index] - etabins["muon"][index+1])/-2.0 for index in range(len(etabins["muon"][:-1]))]),
 }
 
-efficiencies = json.load(open("pt_efficiencies.json", "r"))
-eta_efficiencies = json.load(open("eta_efficiencies.json", "r"))
+#efficiencies = json.load(open("pt_efficiencies.json", "r"))
+#eta_efficiencies = json.load(open("eta_efficiencies.json", "r"))
+efficiencies = json.load(open("pt_efficiencies_endcap.json", "r"))
+eta_efficiencies = json.load(open("eta_efficiencies_endcap.json", "r"))
+
 
 fake_minimum = {
     "against_jet" : 0.00005,
@@ -84,8 +96,6 @@ for dtype in efficiencies:
         for index, wp in enumerate(efficiencies[dtype][disc]):
             genuine[wp] = R.TGraphErrors(len(efficiencies[dtype][disc][wp]["genuine"]), ptbincenters["genuine"], np.array(efficiencies[dtype][disc][wp]["genuine"]), ptbinwidths["genuine"], np.zeros(len(efficiencies[dtype][disc][wp]["genuine"])))
             genuine[wp].SetMarkerSize(1)
-            genuine[wp].SetMarkerColor(colors[index])
-            genuine[wp].SetLineColor(colors[index])
             genuine[wp].SetLineWidth(2)
             genuine[wp].SetMarkerStyle(8)
             genuine[wp].SetMinimum(genuine_minimum[dtype])
@@ -108,10 +118,12 @@ for dtype in efficiencies:
                 wplabel = "VLoose"
             elif "Loose" in wp:
                 wplabel = "Loose"
+            genuine[wp].SetMarkerColor(colors[wplabel])
+            genuine[wp].SetLineColor(colors[wplabel])
             legend.AddEntry(genuine[wp], wplabel, "pl")
             if index == 0:
                 genuine[wp].GetXaxis().SetTitle("generator p_{T}(^{}#tau_{h})")
-                genuine[wp].GetYaxis().SetTitle("genuine tau efficiency")
+                genuine[wp].GetYaxis().SetTitle("genuine ^{}#tau_{h} efficiency")
                 genuine[wp].Draw("APE")
             else:
                 genuine[wp].Draw("PE same")
@@ -132,8 +144,10 @@ for dtype in efficiencies:
         line.SetLineWidth(2)
         line.Draw()
 
-        c.SaveAs("_".join([dtype,disc.replace(",","").replace(" ","_"),"genuine"]) + ".png")
-        c.Print("_".join([dtype,disc.replace(",","").replace(" ","_"),"genuine"]) + ".pdf")
+        #c.SaveAs("_".join([dtype,disc.replace(",","").replace(" ","_"),"genuine"]) + ".png")
+        #c.Print("_".join([dtype,disc.replace(",","").replace(" ","_"),"genuine"]) + ".pdf")
+        c.SaveAs("_".join([dtype,disc.replace(",","").replace(" ","_"),"genuine","endcap"]) + ".png")
+        c.Print("_".join([dtype,disc.replace(",","").replace(" ","_"),"genuine","endcap"]) + ".pdf")
         c.Clear()
         c.SetLogy(1)
         legend = R.TLegend(0.16, 0.78, 0.94, 0.97)
@@ -144,8 +158,6 @@ for dtype in efficiencies:
             fakename =  dtype.replace("against_","")
             fake[wp] = R.TGraphErrors(len(efficiencies[dtype][disc][wp][fakename]), ptbincenters[fakename], np.array(efficiencies[dtype][disc][wp][fakename]), ptbinwidths[fakename], np.zeros(len(efficiencies[dtype][disc][wp][fakename])))
             fake[wp].SetMarkerSize(1)
-            fake[wp].SetMarkerColor(colors[index])
-            fake[wp].SetLineColor(colors[index])
             fake[wp].SetLineWidth(2)
             fake[wp].SetMarkerStyle(8)
             fake[wp].SetMinimum(fake_minimum[dtype])
@@ -168,10 +180,12 @@ for dtype in efficiencies:
                 wplabel = "VLoose"
             elif "Loose" in wp:
                 wplabel = "Loose"
+            fake[wp].SetMarkerColor(colors[wplabel])
+            fake[wp].SetLineColor(colors[wplabel])
             legend.AddEntry(fake[wp], wplabel, "pl")
             if index == 0:
                 fake[wp].GetXaxis().SetTitle(pt_fake_labels[dtype])
-                fake[wp].GetYaxis().SetTitle("%s to tau efficiency"%fakename)
+                fake[wp].GetYaxis().SetTitle("%s #rightarrow ^{}#tau_{h} efficiency"%fakename.capitalize())
                 fake[wp].Draw("APE")
             else:
                 fake[wp].Draw("PE same")
@@ -192,8 +206,10 @@ for dtype in efficiencies:
         line.SetLineWidth(2)
         line.Draw()
 
-        c.SaveAs("_".join([dtype,disc.replace(",","").replace(" ","_"),fakename]) + ".png")
-        c.Print("_".join([dtype,disc.replace(",","").replace(" ","_"),fakename]) + ".pdf")
+        #c.SaveAs("_".join([dtype,disc.replace(",","").replace(" ","_"),fakename]) + ".png")
+        #c.Print("_".join([dtype,disc.replace(",","").replace(" ","_"),fakename]) + ".pdf")
+        c.SaveAs("_".join([dtype,disc.replace(",","").replace(" ","_"),fakename,"endcap"]) + ".png")
+        c.Print("_".join([dtype,disc.replace(",","").replace(" ","_"),fakename,"endcap"]) + ".pdf")
 
 eta_genuine = {}
 eta_fake = {}
@@ -209,14 +225,12 @@ for dtype in eta_efficiencies:
         for index, wp in enumerate(eta_efficiencies[dtype][disc]):
             eta_genuine[wp] = R.TGraphErrors(len(eta_efficiencies[dtype][disc][wp]["genuine"]), etabincenters["genuine"], np.array(eta_efficiencies[dtype][disc][wp]["genuine"]), etabinwidths["genuine"], np.zeros(len(eta_efficiencies[dtype][disc][wp]["genuine"])))
             eta_genuine[wp].SetMarkerSize(1)
-            eta_genuine[wp].SetMarkerColor(colors[index])
-            eta_genuine[wp].SetLineColor(colors[index])
             eta_genuine[wp].SetLineWidth(2)
             eta_genuine[wp].SetMarkerStyle(8)
             eta_genuine[wp].SetMinimum(genuine_minimum[dtype])
             eta_genuine[wp].SetMaximum(1.2)
-            eta_genuine[wp].GetXaxis().SetLimits(-1.4, 1.4)
-#            eta_genuine[wp].GetXaxis().SetLimits(-3.2, 3.2)
+#            eta_genuine[wp].GetXaxis().SetLimits(-1.4, 1.4)
+            eta_genuine[wp].GetXaxis().SetLimits(-3.2, 3.2)
             wplabel = "None"
             if "VVTight" in wp:
                 wplabel = "VVTight"
@@ -234,10 +248,12 @@ for dtype in eta_efficiencies:
                 wplabel = "VLoose"
             elif "Loose" in wp:
                 wplabel = "Loose"
+            eta_genuine[wp].SetMarkerColor(colors[wplabel])
+            eta_genuine[wp].SetLineColor(colors[wplabel])
             legend.AddEntry(eta_genuine[wp], wplabel, "pl")
             if index == 0:
                 eta_genuine[wp].GetXaxis().SetTitle("generator #eta(^{}#tau_{h})")
-                eta_genuine[wp].GetYaxis().SetTitle("genuine tau efficiency")
+                eta_genuine[wp].GetYaxis().SetTitle("genuine ^{}#tau_{h} efficiency")
                 eta_genuine[wp].Draw("APE")
             else:
                 eta_genuine[wp].Draw("PE same")
@@ -253,13 +269,16 @@ for dtype in eta_efficiencies:
         texttop.SetTextFont(42)
         texttop.DrawLatex(0.16,0.955,disc)
 
-        line = R.TLine(-1.4, 1.0, 1.4, 1.0)
+        #line = R.TLine(-1.4, 1.0, 1.4, 1.0)
+        line = R.TLine(-3.2, 1.0, 3.2, 1.0)
         line.SetLineColor(R.kBlack)
         line.SetLineWidth(2)
         line.Draw()
 
-        c.SaveAs("_".join([dtype,disc.replace(",","").replace(" ","_"),"genuine","eta"]) + ".png")
-        c.Print("_".join([dtype,disc.replace(",","").replace(" ","_"),"genuine","eta"]) + ".pdf")
+        #c.SaveAs("_".join([dtype,disc.replace(",","").replace(" ","_"),"genuine","eta"]) + ".png")
+        #c.Print("_".join([dtype,disc.replace(",","").replace(" ","_"),"genuine","eta"]) + ".pdf")
+        c.SaveAs("_".join([dtype,disc.replace(",","").replace(" ","_"),"genuine","eta","endcap"]) + ".png")
+        c.Print("_".join([dtype,disc.replace(",","").replace(" ","_"),"genuine","eta","endcap"]) + ".pdf")
         c.Clear()
         c.SetLogy(1)
         legend = R.TLegend(0.16, 0.78, 0.94, 0.97)
@@ -270,14 +289,12 @@ for dtype in eta_efficiencies:
             fakename =  dtype.replace("against_","")
             eta_fake[wp] = R.TGraphErrors(len(eta_efficiencies[dtype][disc][wp][fakename]), etabincenters[fakename], np.array(eta_efficiencies[dtype][disc][wp][fakename]), etabinwidths[fakename], np.zeros(len(eta_efficiencies[dtype][disc][wp][fakename])))
             eta_fake[wp].SetMarkerSize(1)
-            eta_fake[wp].SetMarkerColor(colors[index])
-            eta_fake[wp].SetLineColor(colors[index])
             eta_fake[wp].SetLineWidth(2)
             eta_fake[wp].SetMarkerStyle(8)
             eta_fake[wp].SetMinimum(fake_minimum[dtype])
             eta_fake[wp].SetMaximum(10.0)
-            eta_fake[wp].GetXaxis().SetLimits(-1.4, 1.4)
-#            eta_fake[wp].GetXaxis().SetLimits(-3.2, 3.2)
+#            eta_fake[wp].GetXaxis().SetLimits(-1.4, 1.4)
+            eta_fake[wp].GetXaxis().SetLimits(-3.2, 3.2)
             wplabel = "None"
             if "VVTight" in wp:
                 wplabel = "VVTight"
@@ -295,10 +312,12 @@ for dtype in eta_efficiencies:
                 wplabel = "VLoose"
             elif "Loose" in wp:
                 wplabel = "Loose"
+            eta_fake[wp].SetMarkerColor(colors[wplabel])
+            eta_fake[wp].SetLineColor(colors[wplabel])
             legend.AddEntry(eta_fake[wp], wplabel, "pl")
             if index == 0:
                 eta_fake[wp].GetXaxis().SetTitle(eta_fake_labels[dtype])
-                eta_fake[wp].GetYaxis().SetTitle("%s to tau efficiency"%fakename)
+                eta_fake[wp].GetYaxis().SetTitle("%s #rightarrow ^{}#tau_{h} efficiency"%fakename.capitalize())
                 eta_fake[wp].Draw("APE")
             else:
                 eta_fake[wp].Draw("PE same")
@@ -314,10 +333,13 @@ for dtype in eta_efficiencies:
         texttop.SetTextFont(42)
         texttop.DrawLatex(0.16,0.955,disc)
 
-        line = R.TLine(-1.4, 1.0, 1.4, 1.0)
+        #line = R.TLine(-1.4, 1.0, 1.4, 1.0)
+        line = R.TLine(-3.2, 1.0, 3.2, 1.0)
         line.SetLineColor(R.kBlack)
         line.SetLineWidth(2)
         line.Draw()
 
-        c.SaveAs("_".join([dtype,disc.replace(",","").replace(" ","_"),fakename,"eta"]) + ".png")
-        c.Print("_".join([dtype,disc.replace(",","").replace(" ","_"),fakename,"eta"]) + ".pdf")
+        #c.SaveAs("_".join([dtype,disc.replace(",","").replace(" ","_"),fakename,"eta"]) + ".png")
+        #c.Print("_".join([dtype,disc.replace(",","").replace(" ","_"),fakename,"eta"]) + ".pdf")
+        c.SaveAs("_".join([dtype,disc.replace(",","").replace(" ","_"),fakename,"eta","endcap"]) + ".png")
+        c.Print("_".join([dtype,disc.replace(",","").replace(" ","_"),fakename,"eta","endcap"]) + ".pdf")
